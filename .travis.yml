@@ -17,7 +17,7 @@ install:
 - npm --production=false install
 - npm --production=false update
 script:
-- npm test
+- npm run build
 - if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ] && [ "$TRAVIS_BRANCH" == "master" ]; then  npm run test:smoke; fi
 before_deploy:
 - >
