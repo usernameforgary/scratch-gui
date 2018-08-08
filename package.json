@@ -28,6 +28,9 @@
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
   },
+  "dependencies": {
+    "scratch-vm": "github:kchadha/scratch-vm#return-add-sprite-function-when-deleting"
+  },
   "devDependencies": {
     "arraybuffer-loader": "^1.0.6",
     "autoprefixer": "^9.0.1",
@@ -102,7 +105,6 @@
     "scratch-render": "0.1.0-prerelease.20180724152606",
     "scratch-storage": "0.5.1",
     "scratch-svg-renderer": "0.2.0-prerelease.20180712223402",
-    "scratch-vm": "0.2.0-prerelease.20180802142248",
     "selenium-webdriver": "3.6.0",
     "startaudiocontext": "1.2.1",
     "style-loader": "^0.21.0",
