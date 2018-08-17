@@ -42,6 +42,7 @@ import dropdownCaret from '../language-selector/dropdown-caret.svg';
 import languageIcon from '../language-selector/language-icon.svg';
 
 import scratchLogo from './scratch-logo.svg';
+import kuDingLogo from './kuding-logo.svg';
 
 const ariaMessages = defineMessages({
     language: {
@@ -159,7 +160,7 @@ class MenuBar extends React.Component {
                                 alt="Scratch"
                                 className={styles.scratchLogo}
                                 draggable={false}
-                                src={scratchLogo}
+                                src={kuDingLogo}
                             />
                         </div>
                         <div
