@@ -16,6 +16,7 @@ import {MenuItem, MenuSection} from '../menu/menu.jsx';
 import ProjectSaver from '../../containers/project-saver.jsx';
 import DeletionRestorer from '../../containers/deletion-restorer.jsx';
 import TurboMode from '../../containers/turbo-mode.jsx';
+import UserInfo from '../user-info/user-info.jsx';
 
 import {openTipsLibrary} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
@@ -28,7 +29,10 @@ import {
     editMenuOpen,
     openLanguageMenu,
     closeLanguageMenu,
-    languageMenuOpen
+    languageMenuOpen,
+    enableCommunity,
+    projectName,
+    setProjectName
 } from '../../reducers/menus';
 
 import styles from './menu-bar.css';
@@ -136,7 +140,8 @@ class MenuBar extends React.Component {
         super(props);
         bindAll(this, [
             'handleLanguageMouseUp',
-            'handleRestoreOption'
+            'handleRestoreOption',
+            'handleProjectNameChange'
         ]);
     }
     handleLanguageMouseUp (e) {
@@ -149,6 +154,9 @@ class MenuBar extends React.Component {
             // restoreFun(); TODO re-enable this when validation issues are fixed
             this.props.onRequestCloseEdit();
         };
+    }
+    handleProjectNameChange(e) {
+        this.props.onProjectNameChange(e.target.value);
     }
     render () {
         return (
@@ -345,24 +353,21 @@ class MenuBar extends React.Component {
                     </div>
                     <Divider className={classNames(styles.divider)} />
                     <div className={classNames(styles.menuBarItem)}>
-                        <MenuBarItemTooltip id="title-field">
-                            <input
-                                disabled
-                                className={classNames(styles.titleField)}
-                                placeholder="Untitled-1"
-                            />
-                        </MenuBarItemTooltip>
+                        <input
+                            value={this.props.projectName}
+                            onChange={this.handleProjectNameChange}
+                            className={classNames(styles.titleField)}
+                            placeholder="请输入项目名称"
+                        />
                     </div>
                     <div className={classNames(styles.menuBarItem)}>
-                        <MenuBarItemTooltip id="share-button">
-                            <Button className={classNames(styles.shareButton)}>
-                                <FormattedMessage
-                                    defaultMessage="Share"
-                                    description="Label for project share button"
-                                    id="gui.menuBar.share"
-                                />
-                            </Button>
-                        </MenuBarItemTooltip>
+                        <Button className={classNames(styles.shareButton)}>
+                            <FormattedMessage
+                                defaultMessage="Share"
+                                description="Label for project share button"
+                                id="gui.menuBar.share"
+                            />
+                        </Button>
                     </div>
                     <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
                         {this.props.enableCommunity ?
@@ -414,7 +419,7 @@ class MenuBar extends React.Component {
                     </a>
                 </div>
                 <div className={styles.accountInfoWrapper}>
-                    <MenuBarItemTooltip id="mystuff">
+                    {/* <MenuBarItemTooltip id="mystuff">
                         <div
                             className={classNames(
                                 styles.menuBarItem,
@@ -427,8 +432,9 @@ class MenuBar extends React.Component {
                                 src={mystuffIcon}
                             />
                         </div>
-                    </MenuBarItemTooltip>
-                    <MenuBarItemTooltip
+                    </MenuBarItemTooltip> */}
+                    <UserInfo />
+                    <div
                         id="account-nav"
                         place="left"
                     >
@@ -451,7 +457,7 @@ class MenuBar extends React.Component {
                                 src={dropdownCaret}
                             />
                         </div>
-                    </MenuBarItemTooltip>
+                    </div>
                 </div>
             </Box>
         );
@@ -477,7 +483,9 @@ MenuBar.propTypes = {
 const mapStateToProps = state => ({
     fileMenuOpen: fileMenuOpen(state),
     editMenuOpen: editMenuOpen(state),
-    languageMenuOpen: languageMenuOpen(state)
+    languageMenuOpen: languageMenuOpen(state),
+    enableCommunity: enableCommunity(state),
+    projectName: projectName(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -488,7 +496,8 @@ const mapDispatchToProps = dispatch => ({
     onRequestCloseEdit: () => dispatch(closeEditMenu()),
     onClickLanguage: () => dispatch(openLanguageMenu()),
     onRequestCloseLanguage: () => dispatch(closeLanguageMenu()),
-    onSeeCommunity: () => dispatch(setPlayer(true))
+    onSeeCommunity: () => dispatch(setPlayer(true)),
+    onProjectNameChange: (value) => dispatch(setProjectName(value))
 });
 
 export default injectIntl(connect(

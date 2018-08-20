@@ -2,6 +2,7 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
+import {projectName} from '../reducers/menus'
 
 /**
  * Project saver component passes a saveProject function to its child.
@@ -29,11 +30,9 @@ class ProjectSaver extends React.Component {
         document.body.appendChild(saveLink);
 
         this.props.vm.saveProjectSb3().then(content => {
-            // TODO user-friendly project name
-            // File name: project-DATE-TIME
             const date = new Date();
             const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
-            const filename = `untitled-project-${timestamp}.sb3`;
+            const filename = this.props.projectName ? `${this.props.projectName}` : `project-${timestamp}.sb3`;
 
             // Use special ms version if available to get it working on Edge.
             if (navigator.msSaveOrOpenBlob) {
@@ -65,10 +64,12 @@ ProjectSaver.propTypes = {
     children: PropTypes.func,
     vm: PropTypes.shape({
         saveProjectSb3: PropTypes.func
-    })
+    }),
+    projectName: PropTypes.string
 };
 
 const mapStateToProps = state => ({
+    projectName: projectName(state),
     vm: state.scratchGui.vm
 });
 
