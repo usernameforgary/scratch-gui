@@ -32,7 +32,7 @@ class ProjectSaver extends React.Component {
         this.props.vm.saveProjectSb3().then(content => {
             const date = new Date();
             const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
-            const filename = this.props.projectName ? `${this.props.projectName}` : `project-${timestamp}.sb3`;
+            const filename = this.props.projectName ? `${this.props.projectName}.sb3` : `project-${timestamp}.sb3`;
 
             // Use special ms version if available to get it working on Edge.
             if (navigator.msSaveOrOpenBlob) {

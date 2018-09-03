@@ -99,7 +99,8 @@ GUI.propTypes = {
     onSeeCommunity: PropTypes.func,
     previewInfoVisible: PropTypes.bool,
     projectData: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    vm: PropTypes.instanceOf(VM)
+    vm: PropTypes.instanceOf(VM),
+    savingStateVisible: PropTypes.bool
 };
 
 GUI.defaultProps = GUIComponent.defaultProps;
@@ -121,7 +122,9 @@ const mapStateToProps = state => ({
         state.scratchGui.targets.stage.id === state.scratchGui.targets.editingTarget
     ),
     soundsTabVisible: state.scratchGui.editorTab.activeTabIndex === SOUNDS_TAB_INDEX,
-    tipsLibraryVisible: state.scratchGui.modals.tipsLibrary
+    tipsLibraryVisible: state.scratchGui.modals.tipsLibrary,
+    showLoginModal: state.scratchGui.userLoginInfo.showLoginModal,
+    savingStateVisible: state.scratchGui.modals.savingProject,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,6 +1,7 @@
 const OPEN_MENU = 'scratch-gui/menus/OPEN_MENU';
 const CLOSE_MENU = 'scratch-gui/menus/CLOSE_MENU';
-const CHANGE_PROJECT_NAME = 'scratch-gui/menus/CHANGE_PRJECT_NAME';
+const CHANGE_PROJECT_NAME = 'scratch-gui/menus/CHANGE_PROJECT_NAME';
+const SHARE_PROJECT = 'scratch-gui/menus/SHARE_PROJECT';
 
 const MENU_FILE = 'fileMenu';
 const MENU_EDIT = 'editMenu';

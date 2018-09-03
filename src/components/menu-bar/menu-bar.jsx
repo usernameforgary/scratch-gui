@@ -16,7 +16,8 @@ import {MenuItem, MenuSection} from '../menu/menu.jsx';
 import ProjectSaver from '../../containers/project-saver.jsx';
 import DeletionRestorer from '../../containers/deletion-restorer.jsx';
 import TurboMode from '../../containers/turbo-mode.jsx';
-import UserInfo from '../user-info/user-info.jsx';
+import UserLoginInfo from "../../containers/user-login-info.jsx";
+import ProjectShare from '../../containers/project-share.jsx';
 
 import {openTipsLibrary} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
@@ -58,6 +59,11 @@ const ariaMessages = defineMessages({
         id: 'gui.menuBar.tutorialsLibrary',
         defaultMessage: 'Tutorials',
         description: 'accessibility text for the tutorials button'
+    },
+    inputPlaceholder: {
+        id: 'custom.projectName.inputPlaceholder',
+        defaultMessage: 'Please input project name',
+        description: 'accessibility text for the project input place holder'
     }
 });
 
@@ -357,17 +363,11 @@ class MenuBar extends React.Component {
                             value={this.props.projectName}
                             onChange={this.handleProjectNameChange}
                             className={classNames(styles.titleField)}
-                            placeholder="请输入项目名称"
+                            placeholder={this.props.intl.formatMessage(ariaMessages.inputPlaceholder)}
                         />
                     </div>
                     <div className={classNames(styles.menuBarItem)}>
-                        <Button className={classNames(styles.shareButton)}>
-                            <FormattedMessage
-                                defaultMessage="Share"
-                                description="Label for project share button"
-                                id="gui.menuBar.share"
-                            />
-                        </Button>
+                        <ProjectShare />
                     </div>
                     <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
                         {this.props.enableCommunity ?
@@ -418,7 +418,7 @@ class MenuBar extends React.Component {
                         </Button>
                     </a>
                 </div>
-                <div className={styles.accountInfoWrapper}>
+                <div className={classNames(styles.menuBarItem, styles.accountInfoWrapper)}>
                     {/* <MenuBarItemTooltip id="mystuff">
                         <div
                             className={classNames(
@@ -433,31 +433,29 @@ class MenuBar extends React.Component {
                             />
                         </div>
                     </MenuBarItemTooltip> */}
-                    <UserInfo />
-                    <div
-                        id="account-nav"
-                        place="left"
+                    <UserLoginInfo />
+                    {/* <MenuBarMenu
+                        open={true} 
                     >
-                        <div
-                            className={classNames(
-                                styles.menuBarItem,
-                                styles.hoverable,
-                                styles.accountNavMenu
-                            )}
-                        >
-                            <img
-                                className={styles.profileIcon}
-                                src={profileIcon}
-                            />
-                            <span>
-                                {'scratch-cat' /* @todo username */}
-                            </span>
-                            <img
-                                className={styles.dropdownCaretIcon}
-                                src={dropdownCaret}
-                            />
-                        </div>
-                    </div>
+                        <MenuSection>
+                            <MenuItem>
+                                <FormattedMessage
+                                        defaultMessage="See Community"
+                                        description="Label for see community button"
+                                        id="gui.menuBar.seeCommunity"
+                                    />
+                            </MenuItem>
+                        </MenuSection>
+                        <MenuSection>
+                            <MenuItem>
+                                <FormattedMessage
+                                    defaultMessage="See Community"
+                                    description="Label for see community button"
+                                    id="gui.menuBar.seeCommunity"
+                                />
+                            </MenuItem>
+                        </MenuSection>
+                    </MenuBarMenu> */}
                 </div>
             </Box>
         );

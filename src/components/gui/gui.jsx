@@ -16,6 +16,7 @@ import TargetPane from '../../containers/target-pane.jsx';
 import SoundTab from '../../containers/sound-tab.jsx';
 import StageWrapper from '../../containers/stage-wrapper.jsx';
 import Loader from '../loader/loader.jsx';
+import SaveProjectLoader from '../loader/loader-save-project.jsx';
 import Box from '../box/box.jsx';
 import MenuBar from '../menu-bar/menu-bar.jsx';
 import CostumeLibrary from '../../containers/costume-library.jsx';
@@ -28,6 +29,7 @@ import WebGlModal from '../../containers/webgl-modal.jsx';
 import TipsLibrary from '../../containers/tips-library.jsx';
 import Cards from '../../containers/cards.jsx';
 import DragLayer from '../../containers/drag-layer.jsx';
+import UserLoginModal from '../../containers/user-login-modal.jsx';
 
 import layout, {STAGE_SIZE_MODES} from '../../lib/layout-constants';
 import {resolveStageSize} from '../../lib/screen-utils';
@@ -80,7 +82,9 @@ const GUIComponent = props => {
         soundsTabVisible,
         stageSizeMode,
         tipsLibraryVisible,
+        showLoginModal,
         vm,
+        savingStateVisible,
         ...componentProps
     } = omit(props, 'dispatch');
     if (children) {
@@ -113,13 +117,17 @@ const GUIComponent = props => {
             <Box
                 className={styles.pageWrapper}
                 dir={isRtl ? 'rtl' : 'ltr'}
-                {...componentProps}
+                //TODO Comment this seems no error appear, need find what this used for
+                //{...componentProps}
             >
                 {previewInfoVisible ? (
                     <PreviewModal hideIntro={hideIntro} />
                 ) : null}
                 {loading ? (
                     <Loader />
+                ) : null}
+                {savingStateVisible ? (
+                    <SaveProjectLoader />
                 ) : null}
                 {importInfoVisible ? (
                     <ImportModal />
@@ -130,6 +138,11 @@ const GUIComponent = props => {
                 {tipsLibraryVisible ? (
                     <TipsLibrary />
                 ) : null}
+
+                {showLoginModal ? (
+                    <UserLoginModal />
+                ) : null}
+
                 {cardsVisible ? (
                     <Cards />
                 ) : null}
@@ -301,7 +314,8 @@ GUIComponent.propTypes = {
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     targetIsStage: PropTypes.bool,
     tipsLibraryVisible: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    savingStateVisible: PropTypes.bool,
 };
 GUIComponent.defaultProps = {
     backpackOptions: {

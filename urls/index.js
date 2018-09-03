@@ -1,0 +1,11 @@
+const SERVER_ADDRESS = `localhost`
+const SERVER_PORT_NUM = 3000
+
+const URL_USER_LOGIN_SIGN_UP = `http://${SERVER_ADDRESS}:${SERVER_PORT_NUM}/users/signup`
+const URL_USER_LOGIN_SIGN_IN = `http://${SERVER_ADDRESS}:${SERVER_PORT_NUM}/users/signin` 
+const URL_SAVE_PROJECT = `http://${SERVER_ADDRESS}:${SERVER_PORT_NUM}/projects/save`
+export {
+  URL_USER_LOGIN_SIGN_UP,
+  URL_USER_LOGIN_SIGN_IN,
+  URL_SAVE_PROJECT,
+}

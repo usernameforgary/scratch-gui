@@ -32,10 +32,12 @@ const Controls = function (props) {
         turbo,
         ...componentProps
     } = props;
+    
     return (
         <div
             className={classNames(styles.controlsContainer, className)}
-            {...componentProps}
+            //TODO find what is this used for
+            //{...componentProps}
         >
             <GreenFlag
                 active={active}

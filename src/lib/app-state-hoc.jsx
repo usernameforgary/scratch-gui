@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
-import {createStore, combineReducers, compose} from 'redux';
+import {createStore, combineReducers, compose, applyMiddleware} from 'redux';
 import ConnectedIntlProvider from './connected-intl-provider.jsx';
+import thunkMiddleware from 'redux-thunk'
 
 import guiReducer, {guiInitialState, guiMiddleware, initFullScreen, initPlayer} from '../reducers/gui';
 import localesReducer, {initLocale, localesInitialState} from '../reducers/locales';
@@ -15,7 +16,7 @@ import {detectLocale} from './detect-locale';
 import {ScratchPaintReducer} from 'scratch-paint';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const enhancer = composeEnhancers(guiMiddleware);
+//const enhancer = composeEnhancers(guiMiddleware);
 
 /*
  * Higher Order Component to provide redux state. If an `intl` prop is provided
@@ -52,7 +53,10 @@ const AppStateHOC = function (WrappedComponent) {
                     locales: initializedLocales,
                     scratchGui: initializedGui
                 },
-                enhancer);
+                composeEnhancers(
+                    guiMiddleware,
+                    applyMiddleware(thunkMiddleware)
+                ));
         }
         componentDidUpdate (prevProps) {
             if (prevProps.isPlayerOnly !== this.props.isPlayerOnly) {

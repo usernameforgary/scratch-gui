@@ -1,8 +1,9 @@
 import {addLocaleData} from 'react-intl';
 
 import {localeData} from 'scratch-l10n';
-import editorMessages from 'scratch-l10n/locales/editor-msgs';
+//import editorMessages from 'scratch-l10n/locales/editor-msgs';
 import RtlLocales from '../lib/rtl-locales';
+import customEditorMessages from '../lib/custom-locales-message';
 
 addLocaleData(localeData);
 
@@ -12,8 +13,8 @@ const SELECT_LOCALE = 'scratch-gui/locales/SELECT_LOCALE';
 const initialState = {
     isRtl: false,
     locale: 'en',
-    messagesByLocale: editorMessages,
-    messages: editorMessages.en
+    messagesByLocale: customEditorMessages,
+    messages: customEditorMessages.en
 };
 
 const reducer = function (state, action) {

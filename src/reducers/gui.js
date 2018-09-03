@@ -17,6 +17,7 @@ import targetReducer, {targetsInitialState} from './targets';
 import toolboxReducer, {toolboxInitialState} from './toolbox';
 import vmReducer, {vmInitialState} from './vm';
 import vmStatusReducer, {vmStatusInitialState} from './vm-status';
+import userInfoReducer, { userInfoInitialState } from './user-info';
 import throttle from 'redux-throttle';
 
 const guiMiddleware = compose(applyMiddleware(throttle(300, {leading: true, trailing: true})));
@@ -39,7 +40,8 @@ const guiInitialState = {
     targets: targetsInitialState,
     toolbox: toolboxInitialState,
     vm: vmInitialState,
-    vmStatus: vmStatusInitialState
+    vmStatus: vmStatusInitialState,
+    userLoginInfo: userInfoInitialState,
 };
 
 const initPlayer = function (currentState) {
@@ -81,7 +83,8 @@ const guiReducer = combineReducers({
     targets: targetReducer,
     toolbox: toolboxReducer,
     vm: vmReducer,
-    vmStatus: vmStatusReducer
+    vmStatus: vmStatusReducer,
+    userLoginInfo: userInfoReducer,
 });
 
 export {
