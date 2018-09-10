@@ -24,6 +24,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const history = createBrowserHistory()
 
+import HomePageComponent from '../components/home-page/home-page.jsx'
+
 /*
  * Higher Order Component to provide redux state. If an `intl` prop is provided
  * it will override the internal `intl` redux state
@@ -82,7 +84,7 @@ const AppStateHOC = function (WrappedComponent) {
                 isPlayerOnly, // eslint-disable-line no-unused-vars
                 ...componentProps
             } = this.props;
-            const scratchComponent = () => ( 
+            const ScratchComponent = () => ( 
                 <ConnectedIntlProvider>
                     <WrappedComponent {...componentProps} />
                 </ConnectedIntlProvider>
@@ -90,20 +92,13 @@ const AppStateHOC = function (WrappedComponent) {
             return (
                 <Provider store={this.store}>
                     <ConnectedRouter history={history}>
-                    <div>
-                        <ul>
-                            <li>
-                                <Link to="/">Home</Link>
-                            </li>
-                            <li>
-                                <Link to="/scratch">Scratch</Link>
-                            </li>
-                        </ul>
-                            <Switch>
-                                <Route exact path="/"/>
-                                <Route path='/scratch' component={scratchComponent}/>
-                            </Switch>
-                    </div>
+                    <ScratchComponent />
+                    {/* <div>
+                        <Switch>
+                            <Route exact path="/" component={scratchComponent}/>
+                            <Route path='/scratch' component={scratchComponent}/>
+                        </Switch>
+                    </div> */}
                     </ConnectedRouter>
                 </Provider>
             );
