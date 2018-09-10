@@ -4,6 +4,10 @@ import {Provider} from 'react-redux';
 import {createStore, combineReducers, compose, applyMiddleware} from 'redux';
 import ConnectedIntlProvider from './connected-intl-provider.jsx';
 import thunkMiddleware from 'redux-thunk'
+import { createBrowserHistory } from 'history'
+import { connectRouter, routerMiddleware, ConnectedRouter } from 'connected-react-router'
+import { Route, Switch } from 'react-router'
+import { Link } from "react-router-dom";
 
 import guiReducer, {guiInitialState, guiMiddleware, initFullScreen, initPlayer} from '../reducers/gui';
 import localesReducer, {initLocale, localesInitialState} from '../reducers/locales';
@@ -17,6 +21,8 @@ import {ScratchPaintReducer} from 'scratch-paint';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 //const enhancer = composeEnhancers(guiMiddleware);
+
+const history = createBrowserHistory()
 
 /*
  * Higher Order Component to provide redux state. If an `intl` prop is provided
@@ -47,15 +53,19 @@ const AppStateHOC = function (WrappedComponent) {
                 scratchGui: guiReducer,
                 scratchPaint: ScratchPaintReducer
             });
+            const middlewares = [
+                thunkMiddleware,
+                routerMiddleware(history)
+            ]
             this.store = createStore(
-                reducer,
+                connectRouter(history)(reducer),
                 {
                     locales: initializedLocales,
                     scratchGui: initializedGui
                 },
                 composeEnhancers(
                     guiMiddleware,
-                    applyMiddleware(thunkMiddleware)
+                    applyMiddleware(...middlewares)
                 ));
         }
         componentDidUpdate (prevProps) {
@@ -72,11 +82,29 @@ const AppStateHOC = function (WrappedComponent) {
                 isPlayerOnly, // eslint-disable-line no-unused-vars
                 ...componentProps
             } = this.props;
+            const scratchComponent = () => ( 
+                <ConnectedIntlProvider>
+                    <WrappedComponent {...componentProps} />
+                </ConnectedIntlProvider>
+            )
             return (
                 <Provider store={this.store}>
-                    <ConnectedIntlProvider>
-                        <WrappedComponent {...componentProps} />
-                    </ConnectedIntlProvider>
+                    <ConnectedRouter history={history}>
+                    <div>
+                        <ul>
+                            <li>
+                                <Link to="/">Home</Link>
+                            </li>
+                            <li>
+                                <Link to="/scratch">Scratch</Link>
+                            </li>
+                        </ul>
+                            <Switch>
+                                <Route exact path="/"/>
+                                <Route path='/scratch' component={scratchComponent}/>
+                            </Switch>
+                    </div>
+                    </ConnectedRouter>
                 </Provider>
             );
         }
