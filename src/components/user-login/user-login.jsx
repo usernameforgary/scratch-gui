@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
-import Button from '../button/button.jsx'
+import Button from '@material-ui/core/Button'
 import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl'
 
 import styles from './user-login.css';
@@ -16,6 +16,7 @@ class UserLoginComponent extends React.Component {
         id="account-nav"
         place="left">
         <Button
+          variant='outlined'
           className={classNames(styles.loginButton)}
           onClick={this.props.toggleLoginModal}
         >

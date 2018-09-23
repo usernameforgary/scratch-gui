@@ -11,6 +11,20 @@ const fetchPost = (url, postData = {}) => (
   })
 )
 
+const fetchFile = (url) => (
+  fetch(url, {
+    method: 'get',
+    mode: 'cors',
+    headers: {
+      'Access-Control-Allow-Origin':'*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'get'
+    }
+  })
+)
+
 export {
-  fetchPost
+  fetch as default,
+  fetchPost,
+  fetchFile,
 }

@@ -18,6 +18,7 @@ import toolboxReducer, {toolboxInitialState} from './toolbox';
 import vmReducer, {vmInitialState} from './vm';
 import vmStatusReducer, {vmStatusInitialState} from './vm-status';
 import userInfoReducer, { userInfoInitialState } from './user-info';
+import snackBarReducer, { snackBarInitialState } from './snack-bar';
 import throttle from 'redux-throttle';
 
 const guiMiddleware = compose(applyMiddleware(throttle(300, {leading: true, trailing: true})));
@@ -42,6 +43,7 @@ const guiInitialState = {
     vm: vmInitialState,
     vmStatus: vmStatusInitialState,
     userLoginInfo: userInfoInitialState,
+    snackBar: snackBarInitialState,
 };
 
 const initPlayer = function (currentState) {
@@ -85,6 +87,7 @@ const guiReducer = combineReducers({
     vm: vmReducer,
     vmStatus: vmStatusReducer,
     userLoginInfo: userInfoReducer,
+    snackBar: snackBarReducer,
 });
 
 export {
@@ -92,5 +95,5 @@ export {
     guiInitialState,
     guiMiddleware,
     initFullScreen,
-    initPlayer
+    initPlayer,
 };

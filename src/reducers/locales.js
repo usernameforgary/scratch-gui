@@ -10,11 +10,12 @@ addLocaleData(localeData);
 const UPDATE_LOCALES = 'scratch-gui/locales/UPDATE_LOCALES';
 const SELECT_LOCALE = 'scratch-gui/locales/SELECT_LOCALE';
 
+const initialLocale = 'en'
 const initialState = {
     isRtl: false,
-    locale: 'en',
     messagesByLocale: customEditorMessages,
-    messages: customEditorMessages.en
+    locale: initialLocale,
+    messages: customEditorMessages[initialLocale]
 };
 
 const reducer = function (state, action) {

@@ -24,6 +24,10 @@ const customMessage = {
     'en': 'Sign Up',
     'zh-cn': '注册'
   },
+  'custom.login.signOutLabel': {
+    'en': 'Sign out',
+    'zh-cn': '退出'
+  },
   'custom.common.email': {
     'en': 'Email',
     'zh-cn': '邮箱'
@@ -43,6 +47,42 @@ const customMessage = {
   'custom.gui.loader.savingProject': {
     'en': 'Saving Project...',
     'zh-cn': '保存项目...'
+  },
+  'custom.home.homePage': {
+    'en': 'Home',
+    'zh-cn': '主页'
+  },
+  'custom.home.createProject': {
+    'en': 'Create Project',
+    'zh-cn': '开始创作'
+  },
+  'custom.user.userProject': {
+    'en': 'My Projects',
+    'zh-cn': '我的作品'
+  },
+  'custom.common.updateDate': {
+    'en': 'Updated At: ',
+    'zh-cn': '最近更新：'
+  },
+  'custom.common.recordDeleteSuccess': {
+    'en': 'Record delete successfully',
+    'zh-cn': '记录删除成功'
+  },
+  'custom.common.recordDeleteFail': {
+    'en': 'Record delete failed',
+    'zh-cn': '记录删除失败'
+  },
+  'custom.project.saveSuccess': {
+    'en': 'Save project successfully',
+    'zh-cn': '项目保存成功'
+  },
+  'custom.project.saveFailed': {
+    'en': 'Save project failed',
+    'zh-cn': '项目保存失败'
+  },
+  'custom.common.operationError': {
+    'en': 'Error occurred while do this operation',
+    'zh-cn': '失败，执行此操作异常'
   }
 }
 

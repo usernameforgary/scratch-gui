@@ -1,0 +1,8 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+
+.scratch-logo {
+  height:  1.6rem;
+  vertical-align: middle;
+}

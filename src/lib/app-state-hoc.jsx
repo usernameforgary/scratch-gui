@@ -7,7 +7,11 @@ import thunkMiddleware from 'redux-thunk'
 import { createBrowserHistory } from 'history'
 import { connectRouter, routerMiddleware, ConnectedRouter } from 'connected-react-router'
 import { Route, Switch } from 'react-router'
-import { Link } from "react-router-dom";
+import {
+  PATH_HOME_PAGE,
+  PATH_CREATE_PROJECT,
+  PATH_USER_PROJECTS,
+} from '../const/route-path'
 
 import guiReducer, {guiInitialState, guiMiddleware, initFullScreen, initPlayer} from '../reducers/gui';
 import localesReducer, {initLocale, localesInitialState} from '../reducers/locales';
@@ -24,7 +28,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const history = createBrowserHistory()
 
-import HomePageComponent from '../components/home-page/home-page.jsx'
+import HomePage from '../containers/home-page.jsx'
+import UserProjects from '../containers/user-projects.jsx'
 
 /*
  * Higher Order Component to provide redux state. If an `intl` prop is provided
@@ -33,82 +38,81 @@ import HomePageComponent from '../components/home-page/home-page.jsx'
  * @returns {React.Component} component with redux and intl state provided
  */
 const AppStateHOC = function (WrappedComponent) {
-    class AppStateWrapper extends React.Component {
-        constructor (props) {
-            super(props);
-            let initializedGui = guiInitialState;
-            if (props.isFullScreen) {
-                initializedGui = initFullScreen(initializedGui);
-            }
-            if (props.isPlayerOnly) {
-                initializedGui = initPlayer(initializedGui);
-            }
+  class AppStateWrapper extends React.Component {
+    constructor (props) {
+      super(props);
+      let initializedGui = guiInitialState;
+      if (props.isFullScreen) {
+        initializedGui = initFullScreen(initializedGui);
+      }
+      if (props.isPlayerOnly) {
+        initializedGui = initPlayer(initializedGui);
+      }
 
-            let initializedLocales = localesInitialState;
-            const locale = detectLocale(Object.keys(locales));
-            if (locale !== 'en') {
-                initializedLocales = initLocale(initializedLocales, locale);
-            }
+      let initializedLocales = localesInitialState;
+      const locale = detectLocale(Object.keys(locales));
+      if (locale !== 'en') {
+        initializedLocales = initLocale(initializedLocales, locale);
+      }
 
-            const reducer = combineReducers({
-                locales: localesReducer,
-                scratchGui: guiReducer,
-                scratchPaint: ScratchPaintReducer
-            });
-            const middlewares = [
-                thunkMiddleware,
-                routerMiddleware(history)
-            ]
-            this.store = createStore(
-                connectRouter(history)(reducer),
-                {
-                    locales: initializedLocales,
-                    scratchGui: initializedGui
-                },
-                composeEnhancers(
-                    guiMiddleware,
-                    applyMiddleware(...middlewares)
-                ));
-        }
-        componentDidUpdate (prevProps) {
-            if (prevProps.isPlayerOnly !== this.props.isPlayerOnly) {
-                this.store.dispatch(setPlayer(this.props.isPlayerOnly));
-            }
-            if (prevProps.isFullScreen !== this.props.isFullScreen) {
-                this.store.dispatch(setFullScreen(this.props.isFullScreen));
-            }
-        }
-        render () {
-            const {
-                isFullScreen, // eslint-disable-line no-unused-vars
-                isPlayerOnly, // eslint-disable-line no-unused-vars
-                ...componentProps
-            } = this.props;
-            const ScratchComponent = () => ( 
-                <ConnectedIntlProvider>
-                    <WrappedComponent {...componentProps} />
-                </ConnectedIntlProvider>
-            )
-            return (
-                <Provider store={this.store}>
-                    <ConnectedRouter history={history}>
-                    <ScratchComponent />
-                    {/* <div>
-                        <Switch>
-                            <Route exact path="/" component={scratchComponent}/>
-                            <Route path='/scratch' component={scratchComponent}/>
-                        </Switch>
-                    </div> */}
-                    </ConnectedRouter>
-                </Provider>
-            );
-        }
+      const reducer = combineReducers({
+        locales: localesReducer,
+        scratchGui: guiReducer,
+        scratchPaint: ScratchPaintReducer
+      });
+      const middlewares = [
+        thunkMiddleware,
+        routerMiddleware(history)
+      ]
+      this.store = createStore(
+        connectRouter(history)(reducer),
+        {
+          locales: initializedLocales,
+          scratchGui: initializedGui
+        },
+        composeEnhancers(
+          guiMiddleware,
+          applyMiddleware(...middlewares)
+        )
+      );
     }
-    AppStateWrapper.propTypes = {
-        isFullScreen: PropTypes.bool,
-        isPlayerOnly: PropTypes.bool
-    };
-    return AppStateWrapper;
+    componentDidUpdate (prevProps) {
+      if (prevProps.isPlayerOnly !== this.props.isPlayerOnly) {
+        this.store.dispatch(setPlayer(this.props.isPlayerOnly));
+      }
+      if (prevProps.isFullScreen !== this.props.isFullScreen) {
+        this.store.dispatch(setFullScreen(this.props.isFullScreen));
+      }
+    }
+    render () {
+      const {
+        isFullScreen, // eslint-disable-line no-unused-vars
+        isPlayerOnly, // eslint-disable-line no-unused-vars
+        ...componentProps
+      } = this.props;
+      const ScratchComponent = () => ( 
+        <ConnectedIntlProvider>
+            <WrappedComponent {...componentProps} />
+        </ConnectedIntlProvider>
+      )
+      return (
+        <Provider store={this.store}>
+          <ConnectedRouter history={history}>
+            <Switch>
+              <Route exact path={PATH_HOME_PAGE} component={HomePage}/>
+              <Route path={PATH_CREATE_PROJECT} component={ScratchComponent}/>
+              <Route path={PATH_USER_PROJECTS} component={UserProjects} />
+            </Switch>
+          </ConnectedRouter>
+        </Provider>
+      );
+    }
+  }
+  AppStateWrapper.propTypes = {
+    isFullScreen: PropTypes.bool,
+    isPlayerOnly: PropTypes.bool
+  };
+  return AppStateWrapper;
 };
 
 export default AppStateHOC;

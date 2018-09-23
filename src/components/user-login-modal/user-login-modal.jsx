@@ -68,10 +68,10 @@ class UserLoginModal extends React.Component {
           onCloseModal={this.props.onRequestClose}
           error={this.props.loginError}
           loginError={{
-            label: `Couldn't sign in, ${this.props.loginErrorMessage}`
+            label: `登录失败, ${this.props.loginErrorMessage}`
           }}
           registerError={{
-            label: `Couldn't sign up, ${this.props.loginErrorMessage}`
+            label: `注册失败, ${this.props.loginErrorMessage}`
           }}
           tabs={{
             afterChange: this.props.loginModalChangeTab

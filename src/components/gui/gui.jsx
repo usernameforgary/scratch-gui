@@ -30,6 +30,7 @@ import TipsLibrary from '../../containers/tips-library.jsx';
 import Cards from '../../containers/cards.jsx';
 import DragLayer from '../../containers/drag-layer.jsx';
 import UserLoginModal from '../../containers/user-login-modal.jsx';
+import SnackBar from '../../containers/snack-bar.jsx'
 
 import layout, {STAGE_SIZE_MODES} from '../../lib/layout-constants';
 import {resolveStageSize} from '../../lib/screen-utils';
@@ -120,6 +121,7 @@ const GUIComponent = props => {
                 //TODO Comment this seems no error appear, need find what this used for
                 //{...componentProps}
             >
+                {props.snackBar.open ? <SnackBar /> : null}
                 {previewInfoVisible ? (
                     <PreviewModal hideIntro={hideIntro} />
                 ) : null}

@@ -19,8 +19,9 @@ import TurboMode from '../../containers/turbo-mode.jsx';
 import UserLoginInfo from "../../containers/user-login-info.jsx";
 import ProjectShare from '../../containers/project-share.jsx';
 
-import {openTipsLibrary} from '../../reducers/modals';
-import {setPlayer} from '../../reducers/mode';
+import { openTipsLibrary } from '../../reducers/modals';
+import { setPlayer } from '../../reducers/mode';
+import { userSaveProject } from '../../reducers/user-info'
 import {
     openFileMenu,
     closeFileMenu,
@@ -147,7 +148,8 @@ class MenuBar extends React.Component {
         bindAll(this, [
             'handleLanguageMouseUp',
             'handleRestoreOption',
-            'handleProjectNameChange'
+            'handleProjectNameChange',
+            'handleProjectSave'
         ]);
     }
     handleLanguageMouseUp (e) {
@@ -163,6 +165,10 @@ class MenuBar extends React.Component {
     }
     handleProjectNameChange(e) {
         this.props.onProjectNameChange(e.target.value);
+    }
+    handleProjectSave() {
+      const {isUserLogin, projectName, userId, vm, projectId} = this.props
+      this.props.onProjectSave(isUserLogin, projectName, userId, vm, false, projectId)
     }
     render () {
         return (
@@ -228,33 +234,30 @@ class MenuBar extends React.Component {
                                 open={this.props.fileMenuOpen}
                                 onRequestClose={this.props.onRequestCloseFile}
                             >
-                                <MenuItemTooltip id="new">
-                                    <MenuItem>
+                                {/* <MenuSection>
+                                    <MenuItem onClick={this.handleNewClick}>
                                         <FormattedMessage
                                             defaultMessage="New"
                                             description="Menu bar item for creating a new project"
                                             id="gui.menuBar.new"
                                         />
                                     </MenuItem>
-                                </MenuItemTooltip>
+                                </MenuSection> */}
                                 <MenuSection>
-                                    <MenuItemTooltip id="save">
-                                        <MenuItem>
-                                            <FormattedMessage
-                                                defaultMessage="Save now"
-                                                description="Menu bar item for saving now"
-                                                id="gui.menuBar.saveNow"
-                                            />
-                                        </MenuItem>
-                                    </MenuItemTooltip>
-                                    <MenuItemTooltip id="copy">
-                                        <MenuItem>
-                                            <FormattedMessage
-                                                defaultMessage="Save as a copy"
-                                                description="Menu bar item for saving as a copy"
-                                                id="gui.menuBar.saveAsCopy"
-                                            /></MenuItem>
-                                    </MenuItemTooltip>
+                                  <MenuItem onClick={this.handleProjectSave}>
+                                    <FormattedMessage
+                                      defaultMessage="Save now"
+                                      description="Menu bar item for saving now"
+                                      id="gui.menuBar.saveNow"
+                                    />
+                                  </MenuItem>
+                                  {/* <MenuItem onClick={this.handleSaveCopy}>
+                                    <FormattedMessage
+                                      defaultMessage="Save as a copy"
+                                      description="Menu bar item for saving as a copy"
+                                      id="gui.menuBar.saveAsCopy"
+                                    />
+                                  </MenuItem> */}
                                 </MenuSection>
                                 <MenuSection>
                                     <ProjectLoader>{(renderFileInput, loadProject, loadProps) => (
@@ -302,27 +305,6 @@ class MenuBar extends React.Component {
                                 open={this.props.editMenuOpen}
                                 onRequestClose={this.props.onRequestCloseEdit}
                             >
-                                <MenuItemTooltip id="restore">
-                                    <DeletionRestorer>{(handleRestore, {restorable /* eslint-disable-line no-unused-vars, max-len */, deletedItem}) => (
-                                        <MenuItem
-                                            className={classNames(styles.disabled)}
-                                            onClick={this.handleRestoreOption(handleRestore)}
-                                        >
-                                            {deletedItem === 'Sprite' ?
-                                                <FormattedMessage
-                                                    defaultMessage="Restore Sprite"
-                                                    description="Menu bar item for restoring the last deleted sprite."
-                                                    id="gui.menuBar.restoreSprite"
-                                                /> :
-                                                <FormattedMessage
-                                                    defaultMessage="Restore"
-                                                    description="Menu bar item for restoring the last deleted item in its disabled state." /* eslint-disable-line max-len */
-                                                    id="gui.menuBar.restore"
-                                                />
-                                            }
-                                        </MenuItem>
-                                    )}</DeletionRestorer>
-                                </MenuItemTooltip>
                                 <MenuSection>
                                     <TurboMode>{(toggleTurboMode, {turboMode}) => (
                                         <MenuItem onClick={toggleTurboMode}>
@@ -366,9 +348,9 @@ class MenuBar extends React.Component {
                             placeholder={this.props.intl.formatMessage(ariaMessages.inputPlaceholder)}
                         />
                     </div>
-                    <div className={classNames(styles.menuBarItem)}>
+                    {/* <div className={classNames(styles.menuBarItem)}>
                         <ProjectShare />
-                    </div>
+                    </div> */}
                     <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
                         {this.props.enableCommunity ?
                             <Button
@@ -419,43 +401,7 @@ class MenuBar extends React.Component {
                     </a>
                 </div>
                 <div className={classNames(styles.menuBarItem, styles.accountInfoWrapper)}>
-                    {/* <MenuBarItemTooltip id="mystuff">
-                        <div
-                            className={classNames(
-                                styles.menuBarItem,
-                                styles.hoverable,
-                                styles.mystuffButton
-                            )}
-                        >
-                            <img
-                                className={styles.mystuffIcon}
-                                src={mystuffIcon}
-                            />
-                        </div>
-                    </MenuBarItemTooltip> */}
                     <UserLoginInfo />
-                    {/* <MenuBarMenu
-                        open={true} 
-                    >
-                        <MenuSection>
-                            <MenuItem>
-                                <FormattedMessage
-                                        defaultMessage="See Community"
-                                        description="Label for see community button"
-                                        id="gui.menuBar.seeCommunity"
-                                    />
-                            </MenuItem>
-                        </MenuSection>
-                        <MenuSection>
-                            <MenuItem>
-                                <FormattedMessage
-                                    defaultMessage="See Community"
-                                    description="Label for see community button"
-                                    id="gui.menuBar.seeCommunity"
-                                />
-                            </MenuItem>
-                        </MenuSection>
-                    </MenuBarMenu> */}
                 </div>
             </Box>
         );
@@ -475,27 +421,37 @@ MenuBar.propTypes = {
     onRequestCloseEdit: PropTypes.func,
     onRequestCloseFile: PropTypes.func,
     onRequestCloseLanguage: PropTypes.func,
-    onSeeCommunity: PropTypes.func
+    onSeeCommunity: PropTypes.func,
+    onProjectSave: PropTypes.func,
+    editingProject: PropTypes.shape({
+      projectData: PropTypes.any,
+      projectId: PropTypes.any
+    }),
 };
 
 const mapStateToProps = state => ({
-    fileMenuOpen: fileMenuOpen(state),
-    editMenuOpen: editMenuOpen(state),
-    languageMenuOpen: languageMenuOpen(state),
-    enableCommunity: enableCommunity(state),
-    projectName: projectName(state),
+  fileMenuOpen: fileMenuOpen(state),
+  editMenuOpen: editMenuOpen(state),
+  languageMenuOpen: languageMenuOpen(state),
+  enableCommunity: enableCommunity(state),
+  projectName: projectName(state),
+  vm: state.scratchGui.vm,
+  isUserLogin: state.scratchGui.userLoginInfo.isUserLogin,
+  userId: state.scratchGui.userLoginInfo.userInfo._id,
+  projectId: state.scratchGui.userLoginInfo.editingProject.projectId,
 });
 
 const mapDispatchToProps = dispatch => ({
-    onOpenTipLibrary: () => dispatch(openTipsLibrary()),
-    onClickFile: () => dispatch(openFileMenu()),
-    onRequestCloseFile: () => dispatch(closeFileMenu()),
-    onClickEdit: () => dispatch(openEditMenu()),
-    onRequestCloseEdit: () => dispatch(closeEditMenu()),
-    onClickLanguage: () => dispatch(openLanguageMenu()),
-    onRequestCloseLanguage: () => dispatch(closeLanguageMenu()),
-    onSeeCommunity: () => dispatch(setPlayer(true)),
-    onProjectNameChange: (value) => dispatch(setProjectName(value))
+  onOpenTipLibrary: () => dispatch(openTipsLibrary()),
+  onClickFile: () => dispatch(openFileMenu()),
+  onRequestCloseFile: () => dispatch(closeFileMenu()),
+  onClickEdit: () => dispatch(openEditMenu()),
+  onRequestCloseEdit: () => dispatch(closeEditMenu()),
+  onClickLanguage: () => dispatch(openLanguageMenu()),
+  onRequestCloseLanguage: () => dispatch(closeLanguageMenu()),
+  onSeeCommunity: () => dispatch(setPlayer(true)),
+  onProjectNameChange: (value) => dispatch(setProjectName(value)),
+  onProjectSave: (isUserLogin, projectName, userId, vm, saveAsCopy, projectId) => dispatch(userSaveProject(isUserLogin, projectName, userId, vm, saveAsCopy, projectId))
 });
 
 export default injectIntl(connect(

@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import { handleUserSignOut } from '../reducers/user-info.js'
 import UserInfoComponent from "../components/user-info/user-info.jsx"
 import UserLogin from "./user-login.jsx"
 
@@ -28,13 +29,14 @@ UserLoginInfo.propTypes = {
 
 const mapStateToProps = state => ({
   isUserLogin: state.scratchGui.userLoginInfo.isUserLogin,
-  user: state.scratchGui.userLoginInfo.userInfo
+  user: state.scratchGui.userLoginInfo.userInfo,
 })
 
-// const mapDispatchToProps = dispatch => ({
-//   setLocales: (addedLocales) => dispatch(setLocales(addedLocales)),
-// })
+const mapDispatchToProps = dispatch => ({
+  handleUserSignOut: () => dispatch(handleUserSignOut()),
+})
 
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(UserLoginInfo)

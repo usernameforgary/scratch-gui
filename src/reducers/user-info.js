@@ -1,7 +1,27 @@
-import { URL_USER_LOGIN_SIGN_UP, URL_USER_LOGIN_SIGN_IN } from '../../urls'
-import { fetchPost } from '../lib/fetchApi'
+import AudioEngine from 'scratch-audio'
+import Renderer from 'scratch-render'
+import { push } from 'connected-react-router'
+import log from '../lib/log'
+import { 
+  PROTOCOL,
+  SERVER_ADDRESS,
+  SERVER_PORT_NUM,
+  URL_USER_LOGIN_SIGN_UP,
+  URL_USER_LOGIN_SIGN_IN,
+  URL_PROJECT_DELETE,
+  URL_SAVE_PROJECT,
+  URL_PROJECT_GET_CONTENT,
+} from '../../urls'
+import { PATH_HOME_PAGE, PATH_CREATE_PROJECT } from '../const/route-path'
+import { fetchPost, fetchFile } from '../lib/fetchApi'
+import fetch from 'cross-fetch'
 import { SECRET_KEY } from '../config'
 import CryptoJS from 'crypto-js'
+import { defineMessages } from 'react-intl'
+import { toArrayBuffer } from '../lib/buffer-util'
+import {updateSnackMessage} from './snack-bar'
+import { openSavingProject, closeSavingProject } from './modals'
+import { projectName, setProjectName } from './menus'
 
 const USER_LOGIN_MODAL = 'scratch-gui/login/USER_LOGIN_MODAL'
 const USER_LOGIN_REQUEST = 'scratch-gui/login/USER_LOGIN_REQUEST'
@@ -11,6 +31,11 @@ const USER_SIGN_UP_REQUEST = 'scratch-gui/login/USER_SIGN_UP_REQUEST'
 const USER_SIGN_UP_SUCCESS = 'scratch-gui/login/USER_SIGN_UP_SUCCESS'
 const USER_SIGN_UP_FAIL = 'scratch-gui/login/USER_SIGN_UP_FAIL'
 const USER_LOGIN_CHANGE_TAB = 'scratch-gui/login/USER_LOGIN_CHANGE_TAB'
+const USER_SIGN_OUT= 'scratch-gui/login/USER_SIGN_OUT'
+const USER_PROJECTS_DELETE = 'scratch-gui/user/USER_PROJECTS_DELETE'
+const USER_PROJECTS_ADD = 'scratch-gui/user/USER_PROJECTS_ADD'
+const USER_PROJECTS_EDITING = 'scratch-gui/user/USER_PROJECTS_EDITING'
+const USER_PROJECTS_UPDATE = 'scratch-gui/user/USER_PROJECTS_UPDATE'
 
 const IS_LOGIN = 'isUserLogin'
 const SHOW_LOGIN_MODAL = 'showLoginModal'
@@ -18,12 +43,79 @@ const LOGIN_ERROR = 'loginError'
 const LOGIN_ERROR_MESSAGE = 'loginErrorMessage'
 const SERVER_INTERNAL_ERROR = 'Sever internal error'
 
+const messages = defineMessages({
+  deleteProjectSuccess: {
+    id: 'custom.common.recordDeleteSuccess',
+    defaultMessage: 'Record delete successfully.'
+  },
+  deleteProjectFailed: {
+    id: 'custom.common.recordDeleteFail',
+    defaultMessage: 'Record delete failed.'
+  },
+  saveProjectFailed: {
+    id: 'custom.project.saveFailed',
+    defaultMessage: 'Save project failed'
+  },
+  saveProjectSuccess: {
+    id: 'custom.project.saveSuccess',
+    defaultMessage: 'Save project successfully'
+  },
+  defaultError: {
+    id: 'custom.common.operationError',
+    defaultMessage: 'Error occurred while do this operation'
+  },
+})
+
 const initialStates = {
-  [IS_LOGIN]: false,
   [SHOW_LOGIN_MODAL]: false,
-  userInfo: {},
+  // [IS_LOGIN]: false,
+  // userInfo: {},
+  [IS_LOGIN]: true,
+  userInfo: {
+    _id: '5b8b40c4a0735096efb4cdaa',
+    username: 'Gary',
+    projects: [
+      {
+        is_active: true,
+        is_public: true,
+        projectName: 'project_1',
+        _id: '5b9fe6893da5e13c60c7af97',
+        userId: '5b9fdbbd6804ba33e368cae9',
+        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+        createdAt: '2018-09-17T17:38:17.450Z',
+        updatedAt: '2018-09-17T17:38:17.450Z',
+        __v: 0
+      },
+      {
+        is_active: true,
+        is_public: true,
+        projectName: 'project_2',
+        _id: '5b9fe6893da5e13c60c7af98',
+        userId: '5b9fdbbd6804ba33e368cae9',
+        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+        createdAt: '2018-09-17T17:38:17.450Z',
+        updatedAt: '2018-09-17T17:38:17.450Z',
+        __v: 0
+      },
+      {
+        is_active: true,
+        is_public: true,
+        _id: '5b9fe6893da5e13c60c7af99',
+        userId: '5b9fdbbd6804ba33e368cae9',
+        projectName: 'project_2',
+        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+        createdAt: '2018-09-17T17:38:17.450Z',
+        updatedAt: '2018-09-17T17:38:17.450Z',
+        __v: 0
+      }
+    ]
+  },
   [LOGIN_ERROR]: false,
-  [LOGIN_ERROR_MESSAGE]: ''
+  [LOGIN_ERROR_MESSAGE]: '',
+  editingProject: {
+    projectData: null,
+    projectId: null,
+  },
 }
 
 const reducer = function(state, action) {
@@ -54,6 +146,11 @@ const reducer = function(state, action) {
         [IS_LOGIN]: true,
         userInfo: action.userInfo
       })
+    case USER_SIGN_OUT:
+      return Object.assign({}, {...state}, {
+        [IS_LOGIN]: false,
+        userInfo: {} 
+      })
     case USER_SIGN_UP_FAIL:
       return Object.assign({}, state, {
         [LOGIN_ERROR]: true,
@@ -64,6 +161,26 @@ const reducer = function(state, action) {
         [LOGIN_ERROR]: false,
         [LOGIN_ERROR_MESSAGE]: ''
       })
+    case USER_PROJECTS_DELETE:
+      return Object.assign({}, {...state}, {
+        userInfo: Object.assign({}, {...state.userInfo}, {
+          projects: state.userInfo.projects.filter(project => project._id !== action.projectId)
+        })
+      })
+    case USER_PROJECTS_ADD:
+      return Object.assign({}, {...state}, {
+        userInfo: Object.assign({}, {...state.userInfo}, {
+          projects: [action.project, ...state.userInfo.projects]
+        })
+      })
+    case USER_PROJECTS_UPDATE:
+      return Object.assign({}, {...state}, {
+        userInfo: Object.assign({}, {...state.userInfo}, {
+          projects: [action.project, ...state.userInfo.projects.filter(project => project._id !== action.project._id)]
+        })
+      })
+    case USER_PROJECTS_EDITING:
+      return Object.assign({}, {...state}, {editingProject: action.editingProject})
     default:
       return state
   }
@@ -84,12 +201,34 @@ const userSignUpSuccess = (userInfo) => ({
   type: USER_SIGN_UP_SUCCESS,
   userInfo
 })
+const userSignOut = () => ({
+  type: USER_SIGN_OUT
+})
 const userSignUpFail = (message) => ({
   type: USER_SIGN_UP_FAIL,
   message
 })
 const loginModalChangeTab = () => ({
   type: USER_LOGIN_CHANGE_TAB
+})
+const deleteUserProject = (projectId) => ({
+  type: USER_PROJECTS_DELETE,
+  projectId
+})
+const addUserProject = (project) => ({
+  type: USER_PROJECTS_ADD,
+  project
+})
+const updateUserProjects = (project) => ({
+  type: USER_PROJECTS_UPDATE,
+  project
+})
+const editingProject = (projectId, projectData = null) => ({
+  type: USER_PROJECTS_EDITING,
+  editingProject: {
+    projectData,
+    projectId
+  } 
 })
 
 const userLogin = (userInfo) => {
@@ -144,6 +283,116 @@ const userSignUp = (userInfo) => {
   }
 }
 
+const handleUserSignOut = () => {
+  return dispatch => {
+    dispatch(userSignOut())
+    dispatch(push(PATH_HOME_PAGE))
+  }
+}
+
+const userProjectDelete = (projectId) => {
+  return dispatch => {
+    return fetchPost(URL_PROJECT_DELETE, {projectId: projectId})
+      .then(res => res.json())
+      .then(json => {
+        dispatch(deleteUserProject(projectId))
+        dispatch(updateSnackMessage(true, 'success', messages.deleteProjectSuccess))
+      })
+      .catch(e => {
+        dispatch(updateSnackMessage(true, 'error', messages.deleteProjectFailed))
+      })
+  }
+}
+
+const userSaveProject = (isUserLogin, projectName, userId, vm, saveAsCopy = false, projectId = '') => {
+  return dispatch => {
+    if(!isUserLogin) {
+      dispatch(toggleLoginModal())
+    } else {
+      if(!projectName) {
+        projectName = `project_${Date.now()}`
+      }
+      projectName = `${projectName}.sb3`
+      if(userId) {
+        projectName = `${userId}_${projectName}`
+      } else {
+        console.log('User id can not find')
+        dispatch(updateSnackMessage(true, 'error', messages.defaultError))
+        return
+      }
+      dispatch(openSavingProject())
+      vm.saveProjectSb3().then(content => {
+        let data = new FormData()
+        data.append('file', content, projectName)
+        data.append('userId', userId)
+        data.append('saveAsCopy', saveAsCopy)
+        data.append('projectId', projectId)
+        return fetch(URL_SAVE_PROJECT, {
+          method: 'POST',
+          body: data
+        })
+        .then(res => res.json())
+        .then(json => {
+          if(json.success) {
+            const projectRes = json.payload.project
+            dispatch(setProjectName(projectRes.projectName))
+            dispatch(editingProject(projectRes._id))
+            if(projectRes._id !== projectId) {
+              dispatch(addUserProject(projectRes))
+            } else {
+              dispatch(updateUserProjects(projectRes))
+            }
+            dispatch(updateSnackMessage(true, 'success', messages.saveProjectSuccess))
+          } else {
+            dispatch(updateSnackMessage(true, 'error', messages.saveProjectFailed))
+          }
+        })
+        .catch(err => {
+          log.error(err)
+          dispatch(updateSnackMessage(true, 'error', messages.saveProjectFailed))
+        }).finally(
+          dispatch(closeSavingProject())
+        )
+      })
+    }
+  }
+}
+
+const userProjectEdit = (project, vm) => {
+  return dispatch => {
+    fetchPost(URL_PROJECT_GET_CONTENT, {project: project})
+      .then(res => res.json())
+      .then(json => {
+        if(!json.success) {
+          dispatch(updateSnackMessage(true, 'error', messages.defaultError))
+        }
+        const bufferData = toArrayBuffer(json.payload.result.data)
+        if (!vm.runtime.renderer) {
+          const renderer = new Renderer(document.createElement('canvas'));
+          vm.attachRenderer(renderer);
+        }
+        if(!vm.runtime.audioEngine) {
+          const audioEngine = new AudioEngine();
+          vm.attachAudioEngine(audioEngine);
+        }
+        
+        vm.loadProject(bufferData)
+        .then(() => {
+          dispatch(setProjectName(project.projectName || ''))
+          dispatch(editingProject(project._id))
+          dispatch(push(PATH_CREATE_PROJECT))
+        })
+        .catch(e => {
+          log.error(e)
+          dispatch(updateSnackMessage(true, 'error', messages.defaultError))
+        })
+      })
+      .catch(e => {
+        console.dir(e)
+        dispatch(updateSnackMessage(true, 'error', messages.defaultError))
+      })
+  }
+}
 
 export {
   reducer as default,
@@ -151,7 +400,11 @@ export {
   userLogin,
   toggleLoginModal,
   userSignUp,
+  handleUserSignOut,
   loginModalChangeTab,
+  userProjectDelete,
+  userProjectEdit,
+  userSaveProject,
   SHOW_LOGIN_MODAL,
   LOGIN_ERROR,
   LOGIN_ERROR_MESSAGE,

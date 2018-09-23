@@ -100,7 +100,6 @@ class Blocks extends React.Component {
             this.setLocale();
         }
 
-        analytics.pageview('/editors/blocks');
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (

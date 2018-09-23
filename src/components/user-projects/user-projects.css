@@ -1,0 +1,6 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.paper-user-info {
+  padding-bottom: 1.5rem;
+}

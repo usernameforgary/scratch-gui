@@ -34,36 +34,67 @@ class GUI extends React.Component {
         };
     }
     componentDidMount () {
-        if (this.props.vm.initialized) return;
-        this.audioEngine = new AudioEngine();
-        this.props.vm.attachAudioEngine(this.audioEngine);
-        this.props.vm.loadProject(this.props.projectData)
+        if (this.props.vm.initialized) {
+          // if(this.props.editingProject.projectId) {
+          //   this.props.vm.loadProject(this.props.editingProject.projectData)
+          //   .then(() => {
+          //       this.setState({loading: false}, () => {
+          //           this.props.vm.setCompatibilityMode(true);
+          //           this.props.vm.start();
+          //       });
+          //   })
+          //   .catch(e => {
+          //       // Need to catch this error and update component state so that
+          //       // error page gets rendered if project failed to load
+          //       this.setState({loadingError: true, errorMessage: e});
+          //   })
+          // }
+        } else {
+          this.audioEngine = new AudioEngine();
+          this.props.vm.attachAudioEngine(this.audioEngine);
+          if(this.props.editingProject.projectId) {
+            // this.props.vm.loadProject(this.props.editingProject.projectData)
+            // .then(() => {
+            //     this.setState({loading: false}, () => {
+            //         this.props.vm.setCompatibilityMode(true);
+            //         this.props.vm.start();
+            //     });
+            // })
+            // .catch(e => {
+            //     // Need to catch this error and update component state so that
+            //     // error page gets rendered if project failed to load
+            //     this.setState({loadingError: true, errorMessage: e});
+            // });
+          } else {
+            this.props.vm.loadProject(this.props.projectData)
             .then(() => {
-                this.setState({loading: false}, () => {
-                    this.props.vm.setCompatibilityMode(true);
-                    this.props.vm.start();
-                });
+              this.setState({loading: false}, () => {
+                  this.props.vm.setCompatibilityMode(true);
+                  this.props.vm.start();
+              });
+            })
+            .catch(e => {
+              // Need to catch this error and update component state so that
+              // error page gets rendered if project failed to load
+              this.setState({loadingError: true, errorMessage: e});
+            });
+          }
+          this.props.vm.initialized = true;
+        }
+    }
+    componentWillReceiveProps (nextProps) {
+        if (this.props.projectData !== nextProps.projectData) {
+          this.setState({loading: true}, () => {
+            this.props.vm.loadProject(nextProps.projectData)
+            .then(() => {
+                this.setState({loading: false});
             })
             .catch(e => {
                 // Need to catch this error and update component state so that
                 // error page gets rendered if project failed to load
                 this.setState({loadingError: true, errorMessage: e});
             });
-        this.props.vm.initialized = true;
-    }
-    componentWillReceiveProps (nextProps) {
-        if (this.props.projectData !== nextProps.projectData) {
-            this.setState({loading: true}, () => {
-                this.props.vm.loadProject(nextProps.projectData)
-                    .then(() => {
-                        this.setState({loading: false});
-                    })
-                    .catch(e => {
-                        // Need to catch this error and update component state so that
-                        // error page gets rendered if project failed to load
-                        this.setState({loadingError: true, errorMessage: e});
-                    });
-            });
+          });
         }
     }
     render () {
@@ -100,7 +131,11 @@ GUI.propTypes = {
     previewInfoVisible: PropTypes.bool,
     projectData: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     vm: PropTypes.instanceOf(VM),
-    savingStateVisible: PropTypes.bool
+    savingStateVisible: PropTypes.bool,
+    editingProject: PropTypes.shape({
+      projectData: PropTypes.any,
+      projectId: PropTypes.any
+    })
 };
 
 GUI.defaultProps = GUIComponent.defaultProps;
@@ -125,6 +160,8 @@ const mapStateToProps = state => ({
     tipsLibraryVisible: state.scratchGui.modals.tipsLibrary,
     showLoginModal: state.scratchGui.userLoginInfo.showLoginModal,
     savingStateVisible: state.scratchGui.modals.savingProject,
+    snackBar: state.scratchGui.snackBar,
+    editingProject: state.scratchGui.userLoginInfo.editingProject,
 });
 
 const mapDispatchToProps = dispatch => ({

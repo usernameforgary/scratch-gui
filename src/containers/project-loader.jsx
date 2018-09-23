@@ -54,11 +54,6 @@ class ProjectLoader extends React.Component {
         const thisFileInput = e.target;
         reader.onload = () => this.props.vm.loadProject(reader.result)
             .then(() => {
-                analytics.event({
-                    category: 'project',
-                    action: 'Import Project File',
-                    nonInteraction: true
-                });
                 this.props.closeLoadingState();
                 // Reset the file input after project is loaded
                 // This is necessary in case the user wants to reload a project

@@ -40,3 +40,12 @@
   width: 0.5rem;
   height: 0.5rem;
 }
+
+.avatar {
+  margin: 10;
+}
+
+.big-avatar {
+  width: 60;
+  height: 60;
+}
