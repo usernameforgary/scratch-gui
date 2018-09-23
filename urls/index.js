@@ -1,5 +1,5 @@
 const PROTOCOL = 'http://'
-const SERVER_ADDRESS = `localhost`
+const SERVER_ADDRESS = `45.63.119.250`
 const SERVER_PORT_NUM = 3000
 
 const URL_USER_LOGIN_SIGN_UP = `${PROTOCOL}${SERVER_ADDRESS}:${SERVER_PORT_NUM}/users/signup`

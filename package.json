@@ -22,7 +22,7 @@
   "homepage": "https://github.com/LLK/scratch-gui#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/LLK/scratch-gui.git"
+    "url": "git+ssh://git@github.com/usernameforgary/scratch-gui.git"
   },
   "peerDependencies": {
     "react": "^16.0.0",
