@@ -68,48 +68,48 @@ const messages = defineMessages({
 
 const initialStates = {
   [SHOW_LOGIN_MODAL]: false,
-  // [IS_LOGIN]: false,
-  // userInfo: {},
-  [IS_LOGIN]: true,
-  userInfo: {
-    _id: '5b8b40c4a0735096efb4cdaa',
-    username: 'Gary',
-    projects: [
-      {
-        is_active: true,
-        is_public: true,
-        projectName: 'project_1',
-        _id: '5b9fe6893da5e13c60c7af97',
-        userId: '5b9fdbbd6804ba33e368cae9',
-        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-        createdAt: '2018-09-17T17:38:17.450Z',
-        updatedAt: '2018-09-17T17:38:17.450Z',
-        __v: 0
-      },
-      {
-        is_active: true,
-        is_public: true,
-        projectName: 'project_2',
-        _id: '5b9fe6893da5e13c60c7af98',
-        userId: '5b9fdbbd6804ba33e368cae9',
-        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-        createdAt: '2018-09-17T17:38:17.450Z',
-        updatedAt: '2018-09-17T17:38:17.450Z',
-        __v: 0
-      },
-      {
-        is_active: true,
-        is_public: true,
-        _id: '5b9fe6893da5e13c60c7af99',
-        userId: '5b9fdbbd6804ba33e368cae9',
-        projectName: 'project_2',
-        projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-        createdAt: '2018-09-17T17:38:17.450Z',
-        updatedAt: '2018-09-17T17:38:17.450Z',
-        __v: 0
-      }
-    ]
-  },
+  [IS_LOGIN]: false,
+  userInfo: {},
+  //[IS_LOGIN]: true,
+  // userInfo: {
+  //   _id: '5b8b40c4a0735096efb4cdaa',
+  //   username: 'Gary',
+  //   projects: [
+  //     {
+  //       is_active: true,
+  //       is_public: true,
+  //       projectName: 'project_1',
+  //       _id: '5b9fe6893da5e13c60c7af97',
+  //       userId: '5b9fdbbd6804ba33e368cae9',
+  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+  //       createdAt: '2018-09-17T17:38:17.450Z',
+  //       updatedAt: '2018-09-17T17:38:17.450Z',
+  //       __v: 0
+  //     },
+  //     {
+  //       is_active: true,
+  //       is_public: true,
+  //       projectName: 'project_2',
+  //       _id: '5b9fe6893da5e13c60c7af98',
+  //       userId: '5b9fdbbd6804ba33e368cae9',
+  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+  //       createdAt: '2018-09-17T17:38:17.450Z',
+  //       updatedAt: '2018-09-17T17:38:17.450Z',
+  //       __v: 0
+  //     },
+  //     {
+  //       is_active: true,
+  //       is_public: true,
+  //       _id: '5b9fe6893da5e13c60c7af99',
+  //       userId: '5b9fdbbd6804ba33e368cae9',
+  //       projectName: 'project_2',
+  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
+  //       createdAt: '2018-09-17T17:38:17.450Z',
+  //       updatedAt: '2018-09-17T17:38:17.450Z',
+  //       __v: 0
+  //     }
+  //   ]
+  //},
   [LOGIN_ERROR]: false,
   [LOGIN_ERROR_MESSAGE]: '',
   editingProject: {
