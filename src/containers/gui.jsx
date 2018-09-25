@@ -50,6 +50,7 @@ class GUI extends React.Component {
           //   })
           // }
         } else {
+          console.info(`......component did mount, vm not initialized...`)
           this.audioEngine = new AudioEngine();
           this.props.vm.attachAudioEngine(this.audioEngine);
           if(this.props.editingProject.projectId) {
@@ -65,6 +66,10 @@ class GUI extends React.Component {
             //     // error page gets rendered if project failed to load
             //     this.setState({loadingError: true, errorMessage: e});
             // });
+            this.setState({loading: false}, () => {
+                this.props.vm.setCompatibilityMode(true);
+                this.props.vm.start();
+            });
           } else {
             this.props.vm.loadProject(this.props.projectData)
             .then(() => {
@@ -84,6 +89,7 @@ class GUI extends React.Component {
     }
     componentWillReceiveProps (nextProps) {
         if (this.props.projectData !== nextProps.projectData) {
+            console.info(`......component will receive props, new project loading...`)
           this.setState({loading: true}, () => {
             this.props.vm.loadProject(nextProps.projectData)
             .then(() => {
