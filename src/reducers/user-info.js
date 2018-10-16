@@ -8,9 +8,14 @@ import {
   SERVER_PORT_NUM,
   URL_USER_LOGIN_SIGN_UP,
   URL_USER_LOGIN_SIGN_IN,
+  URL_USER_LOGIN,
+  URL_USER_COOKIE_LOGIN,
   URL_PROJECT_DELETE,
+  URL_SHARE_PROJECT_TOGGLE,
   URL_SAVE_PROJECT,
   URL_PROJECT_GET_CONTENT,
+  URL_PROJECT_GET_SHARED,
+  URL_PROJECT_UPDATE_DESCRIPTION,
 } from '../../urls'
 import { PATH_HOME_PAGE, PATH_CREATE_PROJECT } from '../const/route-path'
 import { fetchPost, fetchFile } from '../lib/fetchApi'
@@ -22,6 +27,7 @@ import { toArrayBuffer } from '../lib/buffer-util'
 import {updateSnackMessage} from './snack-bar'
 import { openSavingProject, closeSavingProject } from './modals'
 import { projectName, setProjectName } from './menus'
+import { getCookieValueByRegEx, setCookies, removeCookies } from '../lib/cookie-util';
 
 const USER_LOGIN_MODAL = 'scratch-gui/login/USER_LOGIN_MODAL'
 const USER_LOGIN_REQUEST = 'scratch-gui/login/USER_LOGIN_REQUEST'
@@ -33,9 +39,11 @@ const USER_SIGN_UP_FAIL = 'scratch-gui/login/USER_SIGN_UP_FAIL'
 const USER_LOGIN_CHANGE_TAB = 'scratch-gui/login/USER_LOGIN_CHANGE_TAB'
 const USER_SIGN_OUT= 'scratch-gui/login/USER_SIGN_OUT'
 const USER_PROJECTS_DELETE = 'scratch-gui/user/USER_PROJECTS_DELETE'
+const USER_PROJECTS_SHARE = 'scratch-gui/user/USER_PROJECTS_SHARE'
 const USER_PROJECTS_ADD = 'scratch-gui/user/USER_PROJECTS_ADD'
 const USER_PROJECTS_EDITING = 'scratch-gui/user/USER_PROJECTS_EDITING'
 const USER_PROJECTS_UPDATE = 'scratch-gui/user/USER_PROJECTS_UPDATE'
+const USER_UPDATE_SHARED_PROJECTS = 'scratch-gui/user/USER_UPDATE_SHARED_PROJECTS'
 
 const IS_LOGIN = 'isUserLogin'
 const SHOW_LOGIN_MODAL = 'showLoginModal'
@@ -60,6 +68,14 @@ const messages = defineMessages({
     id: 'custom.project.saveSuccess',
     defaultMessage: 'Save project successfully'
   },
+  shareProjectSuccess: {
+    id: 'custom.project.shareSuccess',
+    defaultMessage: 'Share project successfully'
+  },
+  shareProjectFail: {
+    id: 'custom.project.shareFail',
+    defaultMessage: 'Share project failed'
+  },
   defaultError: {
     id: 'custom.common.operationError',
     defaultMessage: 'Error occurred while do this operation'
@@ -70,52 +86,13 @@ const initialStates = {
   [SHOW_LOGIN_MODAL]: false,
   [IS_LOGIN]: false,
   userInfo: {},
-  //[IS_LOGIN]: true,
-  // userInfo: {
-  //   _id: '5b8b40c4a0735096efb4cdaa',
-  //   username: 'Gary',
-  //   projects: [
-  //     {
-  //       is_active: true,
-  //       is_public: true,
-  //       projectName: 'project_1',
-  //       _id: '5b9fe6893da5e13c60c7af97',
-  //       userId: '5b9fdbbd6804ba33e368cae9',
-  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-  //       createdAt: '2018-09-17T17:38:17.450Z',
-  //       updatedAt: '2018-09-17T17:38:17.450Z',
-  //       __v: 0
-  //     },
-  //     {
-  //       is_active: true,
-  //       is_public: true,
-  //       projectName: 'project_2',
-  //       _id: '5b9fe6893da5e13c60c7af98',
-  //       userId: '5b9fdbbd6804ba33e368cae9',
-  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-  //       createdAt: '2018-09-17T17:38:17.450Z',
-  //       updatedAt: '2018-09-17T17:38:17.450Z',
-  //       __v: 0
-  //     },
-  //     {
-  //       is_active: true,
-  //       is_public: true,
-  //       _id: '5b9fe6893da5e13c60c7af99',
-  //       userId: '5b9fdbbd6804ba33e368cae9',
-  //       projectName: 'project_2',
-  //       projectUrl: '/uploaded/5b9fdbbd6804ba33e368cae9_p107.sb3',
-  //       createdAt: '2018-09-17T17:38:17.450Z',
-  //       updatedAt: '2018-09-17T17:38:17.450Z',
-  //       __v: 0
-  //     }
-  //   ]
-  //},
   [LOGIN_ERROR]: false,
   [LOGIN_ERROR_MESSAGE]: '',
   editingProject: {
     projectData: null,
     projectId: null,
   },
+  sharedProjects: []
 }
 
 const reducer = function(state, action) {
@@ -167,6 +144,12 @@ const reducer = function(state, action) {
           projects: state.userInfo.projects.filter(project => project._id !== action.projectId)
         })
       })
+    case USER_PROJECTS_SHARE:
+      return Object.assign({}, {...state}, {
+        userInfo: Object.assign({}, {...state.userInfo}, {
+          projects: [action.project, ...state.userInfo.projects.filter(project => project._id !== action.project._id)]
+        })
+      })
     case USER_PROJECTS_ADD:
       return Object.assign({}, {...state}, {
         userInfo: Object.assign({}, {...state.userInfo}, {
@@ -181,6 +164,10 @@ const reducer = function(state, action) {
       })
     case USER_PROJECTS_EDITING:
       return Object.assign({}, {...state}, {editingProject: action.editingProject})
+    case USER_UPDATE_SHARED_PROJECTS:
+      return Object.assign({}, {...state}, {
+        sharedProjects: action.projects
+      })
     default:
       return state
   }
@@ -215,6 +202,10 @@ const deleteUserProject = (projectId) => ({
   type: USER_PROJECTS_DELETE,
   projectId
 })
+const shareUserProject = (project) => ({
+  type: USER_PROJECTS_SHARE,
+  project 
+})
 const addUserProject = (project) => ({
   type: USER_PROJECTS_ADD,
   project
@@ -230,25 +221,62 @@ const editingProject = (projectId, projectData = null) => ({
     projectId
   } 
 })
+const updateSharedProjects = (projects = []) => ({
+  type: USER_UPDATE_SHARED_PROJECTS,
+  projects
+})
 
 const userLogin = (userInfo) => {
   return (dispatch) => {
-    const userPsw = userInfo.password;
-    userInfo.password = CryptoJS.AES.encrypt(userPsw, SECRET_KEY).toString() 
-
-    return fetchPost(URL_USER_LOGIN_SIGN_IN, {user: userInfo})
+    return fetchPost(URL_USER_LOGIN, {log_account: userInfo.account, log_password: userInfo.password})
       .then(
         res => res.json()
       )
       .then(json => {
-        if(json.success) {
-          dispatch(userLoginSuccess(json.payload.user))
+        console.dir(json)
+        if(json.status) {
+          const {s_id, username, account, head_img} = json
+          fetchPost(URL_USER_COOKIE_LOGIN, {s_id, username, account, head_img})
+            .then(res => res.json())
+            .then(json => {
+              console.dir(json)
+              if(json.success) {
+                dispatch(userLoginSuccess(json.payload.user))
+                const s_id_cookie = getCookieValueByRegEx('s_id')
+                if(!s_id_cookie) {
+                  setCookies({s_id, username, account, head_img})
+                }
+              } else {
+                console.error(json.error)
+              }
+            })
+            .catch(err => {
+              console.error(err.message)
+            })
         } else {
-          dispatch(userLoginFail(json.error))
+          dispatch(userLoginFail(`登录失败`))
         }
       })
       .catch(err => {
         dispatch(userLoginFail(err.message))
+      })
+  }
+}
+
+const userCookieLogin = (s_id, username, account, head_img) => {
+  return dispatch => {
+    fetchPost(URL_USER_COOKIE_LOGIN, {s_id, username, account, head_img})
+      .then(res => res.json())
+      .then(json => {
+        console.dir(json)
+        if(json.success) {
+          dispatch(userLoginSuccess(json.payload.user))
+        } else {
+          console.error(json.error)
+        }
+      })
+      .catch(err => {
+        console.error(err.message)
       })
   }
 }
@@ -285,6 +313,7 @@ const userSignUp = (userInfo) => {
 
 const handleUserSignOut = () => {
   return dispatch => {
+    removeCookies({s_id: '', username: '', account: '', head_img: ''})
     dispatch(userSignOut())
     dispatch(push(PATH_HOME_PAGE))
   }
@@ -300,6 +329,20 @@ const userProjectDelete = (projectId) => {
       })
       .catch(e => {
         dispatch(updateSnackMessage(true, 'error', messages.deleteProjectFailed))
+      })
+  }
+}
+
+const userProjectToggleShare = (projectId, isPublic = false) => {
+  return dispatch => {
+    return fetchPost(URL_SHARE_PROJECT_TOGGLE, {projectId: projectId, isPublic: isPublic})
+      .then(res => res.json())
+      .then(json => {
+        dispatch(shareUserProject(json.payload.project))
+        dispatch(updateSnackMessage(true, 'success', messages.shareProjectSuccess))
+      })
+      .catch(e => {
+        dispatch(updateSnackMessage(true, 'error', messages.shareProjectFail))
       })
   }
 }
@@ -394,17 +437,57 @@ const userProjectEdit = (project, vm) => {
   }
 }
 
+const getSharedProjects = () => {
+  return dispatch => {
+    fetch(URL_PROJECT_GET_SHARED)
+    .then(res => res.json())
+    .then(json => {
+      if(json.success) {
+        const projects = json.payload.projects
+        dispatch(updateSharedProjects(projects))
+      } else {
+        console.error('get shared projects failed') 
+      }
+    })
+    .catch(e => {
+      console.error(e)
+    })
+  }
+}
+
+const updateUserProjectDescription = (currentViewProject) => {
+  return dispatch => {
+    fetchPost(URL_PROJECT_UPDATE_DESCRIPTION, { project: currentViewProject})
+    .then(res => res.json())
+    .then(json => {
+      if(json.success) {
+        const project = json.payload.project
+        dispatch(updateUserProjects(project))
+      } else {
+        console.error('update project failed') 
+      }
+    })
+    .catch(e => {
+      console.error(e)
+    })
+  }
+}
+
 export {
   reducer as default,
   initialStates as userInfoInitialState,
   userLogin,
   toggleLoginModal,
   userSignUp,
+  userCookieLogin,
   handleUserSignOut,
   loginModalChangeTab,
   userProjectDelete,
+  userProjectToggleShare,
   userProjectEdit,
   userSaveProject,
+  getSharedProjects,
+  updateUserProjectDescription,
   SHOW_LOGIN_MODAL,
   LOGIN_ERROR,
   LOGIN_ERROR_MESSAGE,

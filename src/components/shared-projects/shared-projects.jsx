@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import HomePage from '../../containers/home-page.jsx'
 import { Link } from 'react-router-dom'
 import { injectIntl, defineMessages } from 'react-intl'
-import ProjectLoader from '../../containers/project-loader.jsx'
-
 import classNames from 'classnames'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
@@ -22,15 +20,12 @@ import CardActions from '@material-ui/core/CardActions'
 import IconButton from '@material-ui/core/IconButton'
 import { withStyles } from '@material-ui/core/styles'
 
-import { LINK_CREATE_PROJECT } from '../../const/link-component'
-
 import profileIcon from '../user-info/kuding.png'
-import styles from './user-projects.css'
+import styles from './shared-projects.css'
 import kuding_100 from '../../const/svgs/kuding_100.svg'
 import iconEdit from '../../const/svgs/square-edit-outline.svg'
 import iconDelete from '../../const/svgs/delete.svg'
-import iconLockOpen from '../../const/svgs/lock-open.svg'
-import iconLock from '../../const/svgs/lock.svg'
+import iconShare from '../../const/svgs/share.svg'
 
 const stylesConst = theme => {
   return {
@@ -42,7 +37,6 @@ const stylesConst = theme => {
       margin: 10,
     },
     bigAvatar: {
-
       width: 80,
       height: 80,
     },
@@ -77,17 +71,21 @@ const messages = defineMessages({
   }
 })
 
-class UserProjectsComponent extends React.Component {
+class SharedProjectsComponent extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount() {
+    this.props.getSharedProjects()
   }
 
   handleDeleteBtnClick(projectId) {
     this.props.handleUserProjectDelete(projectId)
   }
 
-  handleShareBtnClick(projectId, isPublic) {
-    this.props.handleUserProjectToggleShare(projectId, isPublic)
+  handleShareBtnClick(projectId) {
+    this.props.handleUserProjectShare(projectId)
   }
 
   handleEditBtnClick(project) {
@@ -104,29 +102,7 @@ class UserProjectsComponent extends React.Component {
       <HomePage>
         <Grid item xs={12}>
           <Grid container className={classes.root} spacing={24}>
-            <Grid item xs={3}>
-              <Paper className={styles.paperUserInfo}>
-                <Grid justify='center' alignItems='center' alignContent='center' container>
-                  <Avatar
-                    alt="Avatar"
-                    src={this.props.user && this.props.user.userProfileIconUrl ? this.props.user.userProfileIconUrl : profileIcon}
-                    className={classNames(classes.avatar, classes.bigAvatar)}
-                  />
-                </Grid>
-                <Grid justify='center' alignItems='center' alignContent='center' container>
-                  <div className={classes.userName}><span>{this.props.user.username}</span></div>
-                </Grid>
-                <Grid justify='center' alignItems='center' alignContent='center' container>
-                  <Button
-                    color='primary' variant="contained"
-                    component={LINK_CREATE_PROJECT}
-                  >
-                    {this.props.intl.formatMessage(messages.createProject)}
-                  </Button>
-                </Grid>
-              </Paper>
-            </Grid>
-            <Grid item xs={9} >
+            <Grid item xs={12} >
               <Grid style={{ marginBottom: 30}}>
                 <Paper>
                   <Grid>
@@ -136,13 +112,13 @@ class UserProjectsComponent extends React.Component {
                       textColor="primary"
                       onChange={this.handleChange}
                     >
-                      <Tab label={this.props.intl.formatMessage(messages.myProjects)} />
+                      <Tab label='分享项目' />
                     </Tabs>
                   </Grid>
                 </Paper>
               </Grid>
-              <Grid container justify='flex-start' spacing={16}>
-                {this.props.user.projects ? this.props.user.projects.map(project => (
+              <Grid container justify='center' spacing={24}>
+                {this.props.sharedProjects ? this.props.sharedProjects.map(project => (
                   <Grid key={project._id} item>
                     <Card>
                       <CardActionArea onClick={() => this.handleCardClick(project)}>
@@ -165,22 +141,16 @@ class UserProjectsComponent extends React.Component {
                       </CardActionArea>
                       <Divider light />
                       <CardActions>
-                        <IconButton onClick={() => this.handleEditBtnClick(project)}>
+                        <span>作者：{project.userId.username}</span>
+                        {/* <IconButton onClick={() => this.handleEditBtnClick(project)}>
                           <img src={iconEdit} />
                         </IconButton>
                         <IconButton onClick={() => this.handleDeleteBtnClick(project._id)}>
                           <img src={iconDelete} />
                         </IconButton>
-                        { 
-                          project.is_public ?
-                            <IconButton onClick={() => this.handleShareBtnClick(project._id, !project.is_public)}>
-                              <img src={iconLockOpen} />
-                            </IconButton>
-                          :
-                            <IconButton onClick={() => this.handleShareBtnClick(project._id, !project.is_public)}>
-                              <img src={iconLock} />
-                            </IconButton> 
-                        }
+                        <IconButton onClick={() => this.handleShareBtnClick(project._id)}>
+                          <img src={iconShare} />
+                        </IconButton> */}
                       </CardActions>
                     </Card>
                   </Grid>
@@ -194,12 +164,7 @@ class UserProjectsComponent extends React.Component {
   }
 }
 
-UserProjectsComponent.propTypes = {
-  user: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
-    userProfileIconUrl: PropTypes.string
-  }),
+SharedProjectsComponent.propTypes = {
   handleUserProjectEdit: PropTypes.func.isRequired,
   vm: PropTypes.shape({
     loadProject: PropTypes.func
@@ -207,4 +172,4 @@ UserProjectsComponent.propTypes = {
   handleViewProject: PropTypes.func.isRequired,
 }
 
-export default injectIntl(withStyles(stylesConst)(UserProjectsComponent))
+export default injectIntl(withStyles(stylesConst)(SharedProjectsComponent))

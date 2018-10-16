@@ -41,14 +41,14 @@ class UserLoginModal extends React.Component {
   }
 
   onLogin() {
-    const email = document.querySelector('#email').value;
+    const account = document.querySelector('#account').value;
     const password = document.querySelector('#password').value;
 
-    this.props.userLogin({email: email, password: password})
+    this.props.userLogin({account: account, password: password})
   }
   
   onRegister() {
-    const email = document.querySelector('#email').value;
+    const email = document.querySelector('#account').value;
     const password = document.querySelector('#password').value;
     const username = document.querySelector('#username').value
     this.props.userSignUp({ username: username, email: email, password: password})
@@ -70,35 +70,23 @@ class UserLoginModal extends React.Component {
           loginError={{
             label: `登录失败, ${this.props.loginErrorMessage}`
           }}
-          registerError={{
-            label: `注册失败, ${this.props.loginErrorMessage}`
-          }}
           tabs={{
-            afterChange: this.props.loginModalChangeTab
+            afterChange: this.props.loginModalChangeTab,
+            loginLabel: '登录',
           }}
           form={{
             onLogin: this.onLogin.bind(this),
-            onRegister: this.onRegister.bind(this),
-            // recoverPasswordAnchor: {
-            //   label: "Forgot your password?"
-            // },
             loginBtn: {
               label: this.props.intl.formatMessage(loginMessages.loginSignInLabel)
             },
-            registerBtn: {
-              label: this.props.intl.formatMessage(loginMessages.loginSignUpLabel) 
-            },
-            // recoverPasswordBtn: {
-            //   label: "Send new password"
-            // },
             loginInputs: [
               {
                 containerClass: 'RML-form-group',
                 label: this.props.intl.formatMessage(loginMessages.loginEmail),
-                type: 'email',
+                type: 'input',
                 inputClass: 'RML-form-control',
-                id: 'email',
-                name: 'email',
+                id: 'account',
+                name: 'account',
                 placeholder: this.props.intl.formatMessage(loginMessages.loginEmail),
               },
               {
@@ -110,51 +98,8 @@ class UserLoginModal extends React.Component {
                 name: 'password',
                 placeholder: this.props.intl.formatMessage(loginMessages.loginPassword),
               }
-            ],
-            registerInputs: [
-              {
-                containerClass: 'RML-form-group',
-                label: this.props.intl.formatMessage(loginMessages.loginNickname),
-                type: 'text',
-                inputClass: 'RML-form-control',
-                id: 'username',
-                name: 'username',
-                placeholder: this.props.intl.formatMessage(loginMessages.loginNickname),
-              },
-              {
-                containerClass: 'RML-form-group',
-                label: this.props.intl.formatMessage(loginMessages.loginEmail),
-                type: 'email',
-                inputClass: 'RML-form-control',
-                id: 'email',
-                name: 'email',
-                placeholder: this.props.intl.formatMessage(loginMessages.loginEmail), 
-              },
-              {
-                containerClass: 'RML-form-group',
-                label: this.props.intl.formatMessage(loginMessages.loginPassword),
-                type: 'password',
-                inputClass: 'RML-form-control',
-                id: 'password',
-                name: 'password',
-                placeholder: this.props.intl.formatMessage(loginMessages.loginPassword),
-              }
-            ],
-            recoverPasswordInputs: [
-              {
-                containerClass: 'RML-form-group',
-                label: this.props.intl.formatMessage(loginMessages.loginEmail),
-                type: 'email',
-                inputClass: 'RML-form-control',
-                id: 'email',
-                name: 'email',
-                placeholder: this.props.intl.formatMessage(loginMessages.loginEmail),
-              },
             ],
           }}
-          // separator={{
-          //   label: "or"
-          // }}
         />
       </ModalComponent>
     )

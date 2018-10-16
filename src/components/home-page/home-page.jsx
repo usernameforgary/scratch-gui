@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid'
 import ConnectedIntlProvider from '../../lib/connected-intl-provider.jsx';
 import {defineMessages, FormattedMessage, injectIntl, intlShape, InjectedIntl} from 'react-intl';
 import kuDingLogo from '../menu-bar/kuding-logo.svg'
-import { LINK_HOME_PAGE, LINK_CREATE_PROJECT } from '../../const/link-component'
+import { LINK_HOME_PAGE, LINK_CREATE_PROJECT, LINK_SHARED_PROJECTS } from '../../const/link-component'
 import customStyles from './home-page.css'
 
 import UserLoginInfo from '../../containers/user-login-info.jsx'

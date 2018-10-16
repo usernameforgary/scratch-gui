@@ -351,7 +351,7 @@ class MenuBar extends React.Component {
                     {/* <div className={classNames(styles.menuBarItem)}>
                         <ProjectShare />
                     </div> */}
-                    <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
+                    {/* <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
                         {this.props.enableCommunity ?
                             <Button
                                 className={classNames(styles.communityButton)}
@@ -379,7 +379,7 @@ class MenuBar extends React.Component {
                                 </Button>
                             </MenuBarItemTooltip>
                         }
-                    </div>
+                    </div> */}
                 </div>
                 <div className={classNames(styles.menuBarItem, styles.feedbackButtonWrapper)}>
                     <a

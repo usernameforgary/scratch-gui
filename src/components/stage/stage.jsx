@@ -28,7 +28,7 @@ const StageComponent = props => {
     } = props;
 
     const stageDimensions = getStageDimensions(stageSize, isFullScreen);
-
+    
     return (
         <div>
             <Box

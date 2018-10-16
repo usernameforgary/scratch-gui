@@ -72,6 +72,14 @@ const customMessage = {
     'en': 'Record delete failed',
     'zh-cn': '记录删除失败'
   },
+  'custom.project.shareSuccess': {
+    'en': 'Share project successfully',
+    'zh-cn': '项目分享成功'
+  },
+  'custom.project.shareFail': {
+    'en': 'Share project failed',
+    'zh-cn': '项目分享失败'
+  },
   'custom.project.saveSuccess': {
     'en': 'Save project successfully',
     'zh-cn': '项目保存成功'
