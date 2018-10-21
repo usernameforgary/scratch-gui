@@ -2,7 +2,7 @@ import bindAll from 'lodash.bindall'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { getCookieValueByRegEx } from '../lib/cookie-util'
+import { getCookieValueByRegEx, setCookies } from '../lib/cookie-util'
 
 import { handleUserSignOut, userCookieLogin} from '../reducers/user-info.js'
 import UserInfoComponent from "../components/user-info/user-info.jsx"
@@ -15,7 +15,7 @@ class UserLoginInfo extends React.Component {
 
   componentDidMount() {
     const s_id = getCookieValueByRegEx('s_id')
-    const name = getCookieValueByRegEx('name')
+    const name = getCookieValueByRegEx('username')
     const account = getCookieValueByRegEx('account')
     const head_img = getCookieValueByRegEx('head_img')
     if(!this.props.isUserLogin && s_id) {

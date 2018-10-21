@@ -91,6 +91,10 @@ const customMessage = {
   'custom.common.operationError': {
     'en': 'Error occurred while do this operation',
     'zh-cn': '失败，执行此操作异常'
+  },
+  'custom.common.phoneNumber': {
+    'en': 'Phone number',
+    'zh-cn': '手机号'
   }
 }
 

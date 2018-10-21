@@ -32,6 +32,10 @@ const loginMessages = defineMessages({
   loginNickname: {
     id: 'custom.common.nickname',
     defaultMessage: 'Nickname'
+  },
+  loginPhoneNumber: {
+    id: 'custom.common.phoneNumber',
+    defaultMessage: 'Phone number'
   }
 })
 
@@ -82,12 +86,12 @@ class UserLoginModal extends React.Component {
             loginInputs: [
               {
                 containerClass: 'RML-form-group',
-                label: this.props.intl.formatMessage(loginMessages.loginEmail),
+                label: this.props.intl.formatMessage(loginMessages.loginPhoneNumber),
                 type: 'input',
                 inputClass: 'RML-form-control',
                 id: 'account',
                 name: 'account',
-                placeholder: this.props.intl.formatMessage(loginMessages.loginEmail),
+                placeholder: this.props.intl.formatMessage(loginMessages.loginPhoneNumber),
               },
               {
                 containerClass: 'RML-form-group',
