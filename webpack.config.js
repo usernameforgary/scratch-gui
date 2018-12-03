@@ -6,6 +6,7 @@ var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // PostCss
 var autoprefixer = require('autoprefixer');
@@ -83,19 +84,23 @@ const base = {
     optimization: {
         minimizer: [
             new UglifyJsPlugin({
-                include: /\.min\.js$/
+                include: /\.min\.js$/,
             })
         ]
     },
-    plugins: []
+    plugins: [
+        new BundleAnalyzerPlugin({
+            analyzerMode:'static'
+        }),
+    ]
 };
 
 module.exports = [
     // to run editor examples
     defaultsDeep({}, base, {
         entry: {
-            'lib.min': ['react', 'react-dom'],
             'gui': './src/playground/index.jsx',
+            'lib.min': ['react', 'react-dom'],
             'blocksonly': './src/playground/blocks-only.jsx',
             'compatibilitytesting': './src/playground/compatibility-testing.jsx',
             'player': './src/playground/player.jsx'
@@ -130,8 +135,7 @@ module.exports = [
         },
         plugins: base.plugins.concat([
             new webpack.DefinePlugin({
-                //'process.env.NODE_ENV': '"' + process.env.NODE_ENV + '"',
-                'process.env.NODE_ENV': 'production',
+                'process.env.NODE_ENV': '"' + process.env.NODE_ENV + '"',
                 'process.env.DEBUG': Boolean(process.env.DEBUG),
                 // 'process.env.GA_ID': '"' + (process.env.GA_ID || 'UA-000000-01') + '"'
                 'process.env.GA_ID': '"' + (process.env.GA_ID || 'UA-124189934-1') + '"'
